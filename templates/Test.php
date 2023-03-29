@@ -20,5 +20,11 @@ class __TARGET_CLASS_NAME__Test extends __BASE_TEST_NAME__
      */
     use __TARGET_CLASS_NAME__TestTrait;
 
+    public function setUp(): void
+    {
+        $this->set__TARGET_CLASS_NAME__TestInstance(
+            new __TARGET_CLASS_NAME__();
+        );
+    }
 }
 

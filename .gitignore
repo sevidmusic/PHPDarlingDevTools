@@ -4,4 +4,4 @@ vendor/
 *.phpunit.cache
 *.swp
 *.todos
-
+tmp/
