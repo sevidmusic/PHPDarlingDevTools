@@ -23,7 +23,7 @@ class __TARGET_CLASS_NAME__Test extends __BASE_TEST_NAME__
     public function setUp(): void
     {
         $this->set__TARGET_CLASS_NAME__TestInstance(
-            new __TARGET_CLASS_NAME__();
+            new __TARGET_CLASS_NAME__()
         );
     }
 }
