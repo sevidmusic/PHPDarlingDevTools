@@ -18,9 +18,9 @@ The `NewClass.php` script will generate the required boilerplate
 for a new Darling class, including it's Interface, TestTrait, and
 Test class.
 
-The source code for the Class, Interface, TestTrait, and Test class
-is generated using the templates located in the `./templates`
-directory.
+The source code for the Class, Interface, TestTrait, and Test
+class is generated using the templates located in this library's
+`./templates` directory.
 
 # Installation:
 
@@ -50,34 +50,23 @@ php ./vendor/darling/php-darling-dev-tools/NewClass.php \
 ```
 --path
   The path to the project the class will be created for.
-
   For example: ./path/to/project
 
 --rootnamespace
   The rootnamespace of the project.
-
   For example: Darling\\ProjectName
 
 --name
   The name of the new class.
-
-  For example:
-
-  NewClassName \
+  For example: NewClassName \
 
 --basetestname
   The name of the projects base PHPUnit test class.
-
-  For example:
-
-  ProjectNameTest \
+  For example: ProjectNameTest \
 
 --subnamespace
   The subnamespace to define for the class.
   This will follow the --rootnamespace.
-
-  For example:
-
-  classes\\utilities
+  For example: classes\\utilities
 
 ```
