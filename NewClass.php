@@ -2,22 +2,26 @@
 
 define('WARNING', 'Warning: ');
 define('ERROR', 'Error: ');
+
 /**
  * This script can generate source code for a new roady Class,
  * including it's Interface, TestTrait, and Test class.
  *
- * The code is generated using the templates located in
- * `devTools/templates`.
+ * The source code for the Class, Inteface, TestTrait, and Test class
+ * is generated using the templates located in the `./templates`
+ * directory.
  *
  * Usage:
  *
  * ```
- * # Assuming current directory is roady's root directory:
+ * # Assuming the current directory is roady's root directory:
  *
- * # To write:
- * php devTools/GenrateFromTemplate.php \
- *      --name ClassName \
- *      --subnamespace Sub\\Namespace
+ * php NewClass.php \
+ * --path ./path/to/project \
+ * --rootnamespace Foo\\Bar \
+ * --name Foo \
+ * --basetestname ProjectNameTest \
+ * --subnamespace Baz\\Bazzer
  *
  * ```
  */
