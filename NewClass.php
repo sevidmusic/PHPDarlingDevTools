@@ -2,22 +2,31 @@
 
 define('WARNING', 'Warning: ');
 define('ERROR', 'Error: ');
+
 /**
- * This script can generate source code for a new roady Class,
- * including it's Interface, TestTrait, and Test class.
+ * This script can be used to setup a new class for development in a
+ * Darling PHP library or project.
  *
- * The code is generated using the templates located in
- * `devTools/templates`.
+ * This script will generate the required boilerplate for a new
+ * Darling class, including it's Interface, TestTrait, and Test class.
+ *
+ * The source code for the Class, Interface, TestTrait, and Test class
+ * is generated using the templates located in this library's
+ * `./templates` directory.
  *
  * Usage:
  *
- * ```
- * # Assuming current directory is roady's root directory:
+ * Assuming the Darling Dev Tools library has been installed, and the
+ * current directory is the root directory of the project to create a
+ * new class for:
  *
- * # To write:
- * php devTools/GenrateFromTemplate.php \
- *      --name ClassName \
- *      --subnamespace Sub\\Namespace
+ * ```
+ * php ./vendor/darling/php-darling-dev-tools/NewClass.php \
+ * --path ./ \
+ * --rootnamespace Darling\\ProjectName \
+ * --name NewClassName \
+ * --basetestname NameOfBaseTestClassForProject \
+ * --subnamespace sub\\namespace
  *
  * ```
  */
