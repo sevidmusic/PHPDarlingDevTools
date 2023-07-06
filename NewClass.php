@@ -44,7 +44,7 @@ echo highlightText(
 
 echo PHP_EOL;
 
-createNewClassFiles();
+createNewClassFiles(rootDirectoryPath());
 
 echo newLine();
 
@@ -53,12 +53,15 @@ function highlightText(string $text, int $colorCode): string
     return "\033[38;5;0m\033[48;5;" . strval($colorCode) . "m" . $text . "\033[0m";
 }
 
-function createNewClassFiles(): void
+function createNewClassFiles(string $rootDirectoryPath): void
 {
         outputErrorMessageAndExitIfExpectedArgumentsWereNotSpecified();
-        createExpectedDirectories();
+        createExpectedDirectories($rootDirectoryPath);
         foreach(templatePaths() as $templateName => $templatePath) {
-            $appropriatePathForFile = determineAppropriatePathForFile($templateName);
+            $appropriatePathForFile = determinePathToSaveFileTo(
+                $templateName,
+                $rootDirectoryPath
+            );
             if(!empty($appropriatePathForFile)) {
                 createNewFile(
                     $appropriatePathForFile,
@@ -68,19 +71,19 @@ function createNewClassFiles(): void
         }
 }
 
-function createExpectedDirectories(): void
+function createExpectedDirectories(string $rootDirectoryPath): void
 {
     createDirectoryIfItDoesNotExist(
-        determineAppropriateDirectoryPath('tests', 'interfaces')
+        constructAppropriateDirectoryPath('tests', 'interfaces', $rootDirectoryPath)
     );
     createDirectoryIfItDoesNotExist(
-        determineAppropriateDirectoryPath('tests', 'classes')
+        constructAppropriateDirectoryPath('tests', 'classes', $rootDirectoryPath)
     );
     createDirectoryIfItDoesNotExist(
-        determineAppropriateDirectoryPath('src', 'interfaces')
+        constructAppropriateDirectoryPath('src', 'interfaces', $rootDirectoryPath)
     );
     createDirectoryIfItDoesNotExist(
-        determineAppropriateDirectoryPath('src', 'classes')
+        constructAppropriateDirectoryPath('src', 'classes', $rootDirectoryPath)
     );
 }
 
@@ -144,16 +147,6 @@ function rootPathIsValid(string $path): bool
         ||
         !is_dir($path)
     ) {
-        return false;
-    }
-    return true;
-}
-
-function rootDirectoryPath(): string
-{
-    $specifiedPath = getArgument('path');
-    $tmpdirpath = __DIR__ . DIRECTORY_SEPARATOR . 'tmp';
-    if(!rootPathIsValid($specifiedPath)) {
         outputMessage(
             highlightText(
                 WARNING .
@@ -161,7 +154,7 @@ function rootDirectoryPath(): string
                 196
             ) .
             highlightText(
-                $specifiedPath,
+                $path,
                 202
             ) .
             highlightText(
@@ -169,7 +162,7 @@ function rootDirectoryPath(): string
                 196
             ) .
             highlightText(
-                $tmpdirpath,
+                tmpDirPath(),
                 202
             ) .
             highlightText(
@@ -178,6 +171,21 @@ function rootDirectoryPath(): string
                 196
             ) . newLine()
         );
+        return false;
+    }
+    return true;
+}
+
+function tmpDirPath(): string
+{
+    return __DIR__ . DIRECTORY_SEPARATOR . 'tmp';
+}
+
+function rootDirectoryPath(): string
+{
+    $specifiedPath = getArgument('path');
+    $tmpdirpath = tmpDirPath();
+    if(!rootPathIsValid($specifiedPath)) {
         return $tmpdirpath;
     }
     return $specifiedPath;
@@ -192,11 +200,10 @@ function deriveSubDirectoryPathFromSubnamespace(): string
     );
 }
 
-function determineAppropriateDirectoryPath(string $testsOrSrc, string $interfaceOrClass): string
+function constructAppropriateDirectoryPath(string $testsOrSrc, string $interfaceOrClass, string $rootDirectoryPath): string
 {
-    $rootDir = rootDirectoryPath();
     $newFileSubDirPath = deriveSubDirectoryPathFromSubnamespace();
-    return $rootDir .
+    return $rootDirectoryPath .
         DIRECTORY_SEPARATOR .
         $testsOrSrc .
         DIRECTORY_SEPARATOR .
@@ -215,37 +222,40 @@ function determineAppropriateDirectoryPath(string $testsOrSrc, string $interface
  * @return string
  *
  */
-function determineAppropriatePathForFile(string $templateFileName): string
+function determinePathToSaveFileTo(string $templateFileName, string $rootDirectoryPath): string
 {
-    $rootDir = rootDirectoryPath();
     $newFileSubDirPath = deriveSubDirectoryPathFromSubnamespace();
     return strval(
         match($templateFileName) {
             'TestTrait.php' =>
-                determineAppropriateDirectoryPath(
+                constructAppropriateDirectoryPath(
                     'tests',
-                    'interfaces'
+                    'interfaces',
+                    $rootDirectoryPath
                 ) .
                 DIRECTORY_SEPARATOR .
                 getArgument('name') . 'TestTrait.php',
             'Test.php' =>
-                determineAppropriateDirectoryPath(
+                constructAppropriateDirectoryPath(
                     'tests',
-                    'classes'
+                    'classes',
+                    $rootDirectoryPath
                 ) .
                 DIRECTORY_SEPARATOR .
                 getArgument('name') . 'Test.php',
             'Interface.php' =>
-                determineAppropriateDirectoryPath(
+                constructAppropriateDirectoryPath(
                     'src',
-                    'interfaces'
+                    'interfaces',
+                    $rootDirectoryPath
                 ) .
                 DIRECTORY_SEPARATOR .
                 getArgument('name') . '.php',
             'Class.php' =>
-                determineAppropriateDirectoryPath(
+                constructAppropriateDirectoryPath(
                     'src',
-                    'classes'
+                    'classes',
+                    $rootDirectoryPath
                 ) .
                 DIRECTORY_SEPARATOR .
                 getArgument('name') . '.php',
