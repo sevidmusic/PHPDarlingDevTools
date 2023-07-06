@@ -36,19 +36,15 @@ define('ERROR', 'Error: ');
 echo PHP_EOL;
 echo highlightText(
 '
-  _____             __        ___     _  __             _______
- / ___/______ ___ _/ /____   / _ |   / |/ /__ _    __  / ___/ /__ ____ ___
-/ /__/ __/ -_) _ `/ __/ -_) / __ |  /    / -_) |/|/ / / /__/ / _ `(_-<(_-<
-\___/_/  \__/\_,_/\__/\__/ /_/ |_| /_/|_/\__/|__,__/  \___/_/\_,_/___/___/
-', 84);
+|     _  __             _______             |
+|    / |/ /__ _    __  / ___/ /__ ____ ___  |
+|   /    / -_) |/|/ / / /__/ / _ `(_-<(_-<  |
+|  /_/|_/\__/|__,__/  \___/_/\_,_/___/___/  |
+', rand(20, 229));
 
 echo PHP_EOL;
 
-try {
-    createNewClassFiles();
-} catch (Exception $e) {
-    echo PHP_EOL . $e->getMessage() . PHP_EOL;
-}
+createNewClassFiles();
 
 echo newLine();
 
@@ -57,48 +53,21 @@ function highlightText(string $text, int $colorCode): string
     return "\033[38;5;0m\033[48;5;" . strval($colorCode) . "m" . $text . "\033[0m";
 }
 
-/**
- * Create the new Class's files.
- *
- * @return void
- *
- */
 function createNewClassFiles(): void
 {
-    try {
         outputErrorMessageAndExitIfExpectedArgumentsWereNotSpecified();
         createExpectedDirectories();
         foreach(templatePaths() as $templateName => $templatePath) {
             $appropriatePathForFile = determineAppropriatePathForFile($templateName);
             if(!empty($appropriatePathForFile)) {
-            createNewFile(
-                $appropriatePathForFile,
-                generateSourceCodeFromTemplate($templatePath)
-            );
+                createNewFile(
+                    $appropriatePathForFile,
+                    generateSourceCodeFromTemplate($templatePath)
+                );
             }
         }
-    } catch(Exception $e) {
-       /**
-         * @todo
-         *
-         * Clean up anything that was done. If there is an
-         * error at any point, everything done successfully
-         * must be undone!
-         */
-        echo PHP_EOL .
-            ERROR . 'An error occured: ' .
-            PHP_EOL .
-            '    ' . $e->getMessage();
-    };
 }
 
-/**
- * Create the directories that are required for the new Class's
- * files if they do not already exist.
- *
- * @return void
- *
- */
 function createExpectedDirectories(): void
 {
     createDirectoryIfItDoesNotExist(
@@ -180,13 +149,6 @@ function deriveSubDirectoryPathFromSubnamespace(): string
     );
 }
 
-
-/**
- * Determine an appropriate directory path for a new class file.
- *
- * @return string
- *
- */
 function determineAppropriateDirectoryPath(string $testsOrSrc, string $interfaceOrClass): string
 {
     $rootDir = rootDirectoryPath();
@@ -250,9 +212,11 @@ function determineAppropriatePathForFile(string $templateFileName): string
 }
 
 /**
- * @return array<string, string> Array of paths to the templates used
- *                               to generate the new Classes files,
- *                               indexed by filename.
+ * Return an array of paths to the templates used to generate the new
+ * Class's files. The array will be indexed by filename.
+ *
+ * @return array<string, string>
+ *
  */
 function templatePaths(): array
 {
@@ -308,12 +272,6 @@ function getArguments(): array
     return (is_array($args) ? $args : []);
 }
 
-/**
- * Return the specified argument's value as a string.
- *
- * @return string
- *
- */
 function getArgument(string $name): string
 {
     $arguments = getArguments();
@@ -447,17 +405,30 @@ function outputErrorMessageAndReturnEmptyStringIfFileCouldNotBeCreated(): string
 }
 
 /**
- * Overview of expected TestTrait Template placeholders:
+ * Generate the appropriate source code using the template located
+ * at the specified $templatePath.
  *
- * __SUB_NAMESPACE__           The sub namespace to use for the
- *                             new TestTrait.
+ * The templates use placeholders to indicate what actual source
+ * code should be generated and where.
  *
- * __TARGET_CLASS_NAME__       The name of the interface the TestTrait
- *                             will define tests for.
+ * Overview of expected Template placeholders:
+ *
+ * __BASE_TEST_NAME__          The name of the base test defined
+ *                             by the project. This test name will
+ *                             correspond to the name of the test
+ *                             defined at:
+ *
+ *                             tests/BASETESTNAME.php
+ *
+ * __ROOT_NAMESPACE__          The root namespace to use.
+ *
+ * __TARGET_CLASS_NAME__       The name to assign to the class.
+ *
+ * __SUB_NAMESPACE__           The sub namespace to use.
  *
  * __LC_TARGET_CLASS_NAME__    Lower case form of the name of the
- *                             interface the TestTrait will define
- *                             tests for.
+ *                             class to generate source code for.
+ *
  */
 function generateSourceCodeFromTemplate(string $templatePath): string
 {
