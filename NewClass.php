@@ -87,23 +87,46 @@ function createExpectedDirectories(): void
 function createNewFile(string $path, string $content): void
 {
     if(file_exists($path)) {
-        echo PHP_EOL . WARNING . 'Could not write file because ' .
-        'A file already exists at ' . $path . PHP_EOL;
+        outputMessage(
+            highlightText(
+                WARNING . 'Could not write file because ' .
+                'A file already exists at ' . $path,
+                166
+            )
+        );
+        return;
     }
-    echo PHP_EOL . 'Writing to ' . $path . PHP_EOL;
-    file_put_contents($path, $content);
+    $output = highlightText('writing ' . $path, 66);
+    if(file_put_contents($path, $content) > 0) {
+        $output .= successIndicator();
+    } else {
+        $output .= errorIndicator();
+        $output .= highlightText('Failed to write: ' . $path, 208);
+    }
+    outputMessage($output);
 }
 
+function successIndicator(): string
+{
+    return highlightText(' ✔ ', 83);
+}
+
+function errorIndicator(): string
+{
+    return highlightText(' X ', 196);
+}
 
 function createDirectoryIfItDoesNotExist(string $path): void
 {
-    if(
-        !is_dir(
-           $path
-        )
-    ) {
-        echo PHP_EOL . 'Creating directory at: ' . $path . PHP_EOL;
-        mkdir($path, permissions: 0755, recursive: true);
+    if(!is_dir($path)) {
+        $output = highlightText('Creating directory at: ' . $path, 66);
+        if(mkdir($path, permissions: 0755, recursive: true) !== false) {
+            $output .= successIndicator();
+        } else {
+            $output .= errorIndicator();
+            $output .= highlightText('Failed to write: ' . $path, 208);
+        }
+        outputMessage($output);
     }
 }
 
@@ -131,10 +154,30 @@ function rootDirectoryPath(): string
     $specifiedPath = getArgument('path');
     $tmpdirpath = __DIR__ . DIRECTORY_SEPARATOR . 'tmp';
     if(!rootPathIsValid($specifiedPath)) {
-        echo PHP_EOL .
-            WARNING . 'The specified --path `' . $specifiedPath .
-            '` does not exist. The ' . $tmpdirpath . ' will ' .
-            'be used as the --path instead';
+        outputMessage(
+            highlightText(
+                WARNING .
+                'The specified --path `',
+                196
+            ) .
+            highlightText(
+                $specifiedPath,
+                202
+            ) .
+            highlightText(
+                '` cannot be used. ',
+                196
+            ) .
+            highlightText(
+                $tmpdirpath,
+                202
+            ) .
+            highlightText(
+                ' will ' .
+                'be used as the --path instead',
+                196
+            ) . newLine()
+        );
         return $tmpdirpath;
     }
     return $specifiedPath;
@@ -305,7 +348,6 @@ function outputErrorMessageAndExitIfExpectedArgumentsWereNotSpecified(): void
 {
     $args = getArguments();
     $example = newLine() . 'For example:' . newLine() . 'php NewClass.php \\';
-
     if(!isset($args['name'])) {
         outputMessageAndExit(
             PHP_EOL .
