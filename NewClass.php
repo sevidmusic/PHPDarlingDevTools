@@ -92,25 +92,29 @@ function createNewFile(string $path, string $content): void
     if(file_exists($path)) {
         outputMessage(
             highlightText(
-                'The following file already exists:',
+                'Skipping ',
                 174
             ) .
-            newLine() .
             highlightText(
                 $path,
                 202
+            ) .
+            highlightText(
+                ' because it already exists',
+                174
             )
+
         );
-        return;
-    }
-    $output = highlightText('writing ' . $path, 66);
-    if(file_put_contents($path, $content) > 0) {
-        $output .= successIndicator();
     } else {
-        $output .= errorIndicator();
-        $output .= highlightText('Failed to write: ' . $path, 208);
+        $output = highlightText('writing ' . $path, 66);
+        if(file_put_contents($path, $content) > 0) {
+            $output .= successIndicator();
+        } else {
+            $output .= errorIndicator();
+            $output .= highlightText('Failed to write: ' . $path, 208);
+        }
+        outputMessage($output);
     }
-    outputMessage($output);
 }
 
 function successIndicator(): string
@@ -126,12 +130,12 @@ function errorIndicator(): string
 function createDirectoryIfItDoesNotExist(string $path): void
 {
     if(!is_dir($path)) {
-        $output = highlightText('Creating directory at: ' . $path, 66);
+        $output = highlightText('Creating new directory at ' . $path . ' ', 66);
         if(mkdir($path, permissions: 0755, recursive: true) !== false) {
             $output .= successIndicator();
         } else {
-            $output .= errorIndicator();
-            $output .= highlightText('Failed to write: ' . $path, 208);
+            $output .= errorIndicator() . PHP_EOL;
+            $output .= highlightText('Failed to create directory: ' . $path . ' ', 208);
         }
         outputMessage($output);
     }
