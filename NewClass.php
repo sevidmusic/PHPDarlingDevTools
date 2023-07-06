@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 define('WARNING', 'Warning: ');
 define('ERROR', 'Error: ');
 
@@ -16,9 +18,9 @@ define('ERROR', 'Error: ');
  *
  * Usage:
  *
- * Assuming the Darling Dev Tools library has been installed, and the
- * current directory is the root directory of the project to create a
- * new class for:
+ * Assuming the Darling Dev Tools library has been installed, and
+ * the current directory is the root directory of the project the
+ * new class should be created for:
  *
  * ```
  * php ./vendor/darling/php-darling-dev-tools/NewClass.php \
@@ -30,6 +32,16 @@ define('ERROR', 'Error: ');
  *
  * ```
  */
+
+echo PHP_EOL;
+echo highlightText(
+'
+  _____             __        ___     _  __             _______
+ / ___/______ ___ _/ /____   / _ |   / |/ /__ _    __  / ___/ /__ ____ ___
+/ /__/ __/ -_) _ `/ __/ -_) / __ |  /    / -_) |/|/ / / /__/ / _ `(_-<(_-<
+\___/_/  \__/\_,_/\__/\__/ /_/ |_| /_/|_/\__/|__,__/  \___/_/\_,_/___/___/
+', 84);
+
 echo PHP_EOL;
 
 try {
@@ -38,25 +50,32 @@ try {
     echo PHP_EOL . $e->getMessage() . PHP_EOL;
 }
 
-echo PHP_EOL . PHP_EOL;
+echo newLine();
+
+function highlightText(string $text, int $colorCode): string
+{
+    return "\033[38;5;0m\033[48;5;" . strval($colorCode) . "m" . $text . "\033[0m";
+}
 
 /**
  * Create the new Class's files.
  *
  * @return void
  *
- * @throws Exception
  */
 function createNewClassFiles(): void
 {
     try {
-        throwErrorIfExpectedArgumentsWereNotSpecified();
+        outputErrorMessageAndExitIfExpectedArgumentsWereNotSpecified();
         createExpectedDirectories();
         foreach(templatePaths() as $templateName => $templatePath) {
+            $appropriatePathForFile = determineAppropriatePathForFile($templateName);
+            if(!empty($appropriatePathForFile)) {
             createNewFile(
-                newFilePath($templateName),
+                $appropriatePathForFile,
                 generateSourceCodeFromTemplate($templatePath)
             );
+            }
         }
     } catch(Exception $e) {
        /**
@@ -182,19 +201,21 @@ function determineAppropriateDirectoryPath(string $testsOrSrc, string $interface
 }
 
 /**
- * Determine the appropriate path to save a file to.
+ * Determine the appropriate path to save a file to based
+ * on the provided $templateFileName name.
+ *
+ * If the $templateFileName does not match an expected
+ * template file name an empty string will be returned.
  *
  * @return string
  *
- * @throws Exception
- *
  */
-function newFilePath(string $filename): string
+function determineAppropriatePathForFile(string $templateFileName): string
 {
     $rootDir = rootDirectoryPath();
     $newFileSubDirPath = deriveSubDirectoryPathFromSubnamespace();
     return strval(
-        match($filename) {
+        match($templateFileName) {
             'TestTrait.php' =>
                 determineAppropriateDirectoryPath(
                     'tests',
@@ -223,7 +244,7 @@ function newFilePath(string $filename): string
                 ) .
                 DIRECTORY_SEPARATOR .
                 getArgument('name') . '.php',
-            default => throwErrorIfFileCouldNotBeCreated(),
+            default => outputErrorMessageAndReturnEmptyStringIfFileCouldNotBeCreated(),
         }
     );
 }
@@ -295,73 +316,64 @@ function getArguments(): array
  */
 function getArgument(string $name): string
 {
-    return strval(getArguments()[$name] ?? '');
+    $arguments = getArguments();
+    return match(isset($arguments[$name]) && is_string($arguments[$name])) {
+        true => $arguments[$name],
+        default => '',
+    };
 }
 
-function throwErrorIfExpectedArgumentsWereNotSpecified(): void
+function exampleArgs(string $highlightArg = '') : string
+{
+    return PHP_EOL .
+    ($highlightArg === 'name' ? highlightText('--name Foo \\', 202) : '--name Foo \\') .
+    PHP_EOL .
+    ($highlightArg === 'path' ? highlightText('--path ./path/to/project \\', 202) : '--path ./path/to/project \\') .
+    PHP_EOL .
+    ($highlightArg === 'rootnamespace' ? highlightText('--rootnamespace Foo\\\\Bar \\', 202) : '--rootnamespace Foo\\\\Bar \\') .
+    PHP_EOL .
+    ($highlightArg === 'subnamespace' ? highlightText('--subnamespace Baz\\\\Bazzer \\', 202) : '--subnamespace Baz\\\\Bazzer \\') .
+    PHP_EOL .
+    ($highlightArg === 'basetestname' ? highlightText('--basetestname ProjectNameTest', 202) : '--basetestname ProjectNameTest') .
+    PHP_EOL;
+}
+
+function newLine(): string
+{
+    return str_repeat(PHP_EOL, 2);
+}
+
+function outputErrorMessageAndExitIfExpectedArgumentsWereNotSpecified(): void
 {
     $args = getArguments();
-
-    $example =
-            PHP_EOL .
-            PHP_EOL .
-            'For example:' .
-            PHP_EOL .
-            PHP_EOL .
-            'php NewClass.php \\' .
-            PHP_EOL .
-            '--path ./path/to/project \\' .
-            PHP_EOL .
-            '--rootnamespace Foo\\\\Bar \\' .
-            PHP_EOL .
-            '--name Foo \\' .
-            PHP_EOL .
-            '--basetestname ProjectNameTest \\' .
-            PHP_EOL .
-            '--subnamespace Baz\\\\Bazzer' .
-            PHP_EOL;
-    if(!isset($args['path'])) {
-        throw new exception(
-            PHP_EOL .
-            'You must specify a --path that is the full path to ' .
-            'the project the new class will be created for.' .
-            $example
-        );
-    }
+    $example = newLine() . 'For example:' . newLine() . 'php NewClass.php \\';
 
     if(!isset($args['name'])) {
-        throw new exception(
+        outputMessageAndExit(
             PHP_EOL .
-            'You must specify a --name for the new Class.' .
-            $example
+            'You must specify a ' . highlightText('--name', 202) . ' for the new Class.' .
+            $example. exampleArgs('name')
         );
     }
 
-    if(!isset($args['basetestname'])) {
-        throw new exception(
+    if(!isset($args['path'])) {
+        outputMessageAndExit(
             PHP_EOL .
-            'You must specify a --basetestname that matches the ' .
-            'name of the projects base test class. This class ' .
-            'should exist at `tests/BASETESTNAMETest.php' .
-            PHP_EOL .
-            PHP_EOL .
-            'Note: This script is intended for use creating Darling '.
-            'libraries, if your project is not a darling library ' .
-            'then this parameter will probably not make sense to ' .
-            'to you, and you are probably using this script for ' .
-            'for the wrong purpose.' .
-            $example
+            'You must specify a ' . highlightText('--path', 202) . ' that is the full path to ' .
+            'the project the new class will be created for.' .
+            $example . exampleArgs('path')
         );
     }
 
     if(!isset($args['rootnamespace'])) {
-        throw new exception(
+        outputMessageAndExit(
             PHP_EOL .
-            'You must specify a --rootnamespace. This will be ' .
+            'You must specify a ' .
+            highlightText('--rootnamespace', 202) .
+            '. This will be ' .
             'the part of the namespace that should precede the ' .
             '--subnamespace.' .
-            PHP_EOL .
-            PHP_EOL .
+            newLine() .
             'For example: ' .
             'If the --subnamespace is `Sub\\Namespace` and the ' .
             ' --rootnamespace is `Root\\Namespace`' .
@@ -370,18 +382,19 @@ function throwErrorIfExpectedArgumentsWereNotSpecified(): void
             PHP_EOL .
             'Another example:' .
             PHP_EOL .
-            str_replace('For example:', '', $example)
+            str_replace('For example:', '', $example . exampleArgs('rootnamespace'))
         );
     }
 
     if(!isset($args['subnamespace'])) {
-        throw new exception(
+        outputMessageAndExit(
             PHP_EOL .
-            'You must specify a --subnamespace. This will be ' .
+            'You must specify a ' .
+            highlightText('--subnamespace', 202) .
+            '. This will be ' .
             'the part of the namespace that should follow the ' .
             'projects root namespace.' .
-            PHP_EOL .
-            PHP_EOL .
+            newLine() .
             'For example: ' .
             'If the projects root namespace is ' .
             '`Root\\Namespace` and the subnamespace ' .
@@ -390,16 +403,47 @@ function throwErrorIfExpectedArgumentsWereNotSpecified(): void
             PHP_EOL .
             'Another example:' .
             PHP_EOL .
-            str_replace('For example:', '', $example)
+            str_replace('For example:', '', $example . exampleArgs('subnamespace'))
         );
     }
+
+    if(!isset($args['basetestname'])) {
+        outputMessageAndExit(
+            PHP_EOL .
+            'You must specify a ' .
+            highlightText('--basetestname', 202) .
+            ' that matches the ' .
+            'name of the projects base test class. This class ' .
+            'should exist at `tests/BASETESTNAMETest.php' .
+            newLine() .
+            'Note: This script is intended for use creating Darling '.
+            'libraries, if your project is not a darling library ' .
+            'then this parameter will probably not make sense to ' .
+            'to you, and you are probably using this script for ' .
+            'for the wrong purpose.' .
+            $example. exampleArgs('basetestname')
+        );
+    }
+
 }
 
-function throwErrorIfFileCouldNotBeCreated(): void
+function outputMessage(string $message) : void
 {
-    throw new exception(
+    echo PHP_EOL . $message . PHP_EOL;
+}
+
+function outputMessageAndExit(string $message, int $exitCode = 1): void
+{
+    outputMessage($message);
+    exit($exitCode);
+}
+
+function outputErrorMessageAndReturnEmptyStringIfFileCouldNotBeCreated(): string
+{
+    outputMessage(
         'You must specify a --name and --subnamespace.'
     );
+    return '';
 }
 
 /**
