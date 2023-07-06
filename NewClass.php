@@ -92,9 +92,13 @@ function createNewFile(string $path, string $content): void
     if(file_exists($path)) {
         outputMessage(
             highlightText(
-                WARNING . 'Could not write file because ' .
-                'A file already exists at ' . $path,
-                166
+                'The following file already exists:',
+                174
+            ) .
+            newLine() .
+            highlightText(
+                $path,
+                202
             )
         );
         return;
