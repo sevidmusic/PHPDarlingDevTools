@@ -2,7 +2,7 @@
 
 namespace __ROOT_NAMESPACE__\tests\interfaces\__SUB_NAMESPACE__;
 
-use __ROOT_NAMESPACE__\interfaces\__SUB_NAMESPACE__\__TARGET_CLASS_NAME__;
+use \__ROOT_NAMESPACE__\interfaces\__SUB_NAMESPACE__\__TARGET_CLASS_NAME__;
 
 /**
  * The __TARGET_CLASS_NAME__TestTrait defines common tests for
