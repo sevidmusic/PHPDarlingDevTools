@@ -3,6 +3,7 @@
 namespace __ROOT_NAMESPACE__\tests\interfaces\__SUB_NAMESPACE__;
 
 use \__ROOT_NAMESPACE__\interfaces\__SUB_NAMESPACE__\__TARGET_CLASS_NAME__;
+use \PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * The __TARGET_CLASS_NAME__TestTrait defines common tests for
@@ -11,6 +12,7 @@ use \__ROOT_NAMESPACE__\interfaces\__SUB_NAMESPACE__\__TARGET_CLASS_NAME__;
  * @see __TARGET_CLASS_NAME__
  *
  */
+#[CoversClass(__TARGET_CLASS_NAME__::class)]
 trait __TARGET_CLASS_NAME__TestTrait
 {
 
@@ -25,7 +27,7 @@ trait __TARGET_CLASS_NAME__TestTrait
     /**
      * Set up an instance of a __TARGET_CLASS_NAME__ implementation to test.
      *
-     * This method must also set the __TARGET_CLASS_NAME__ implementation instance
+     * This method must set the __TARGET_CLASS_NAME__ implementation instance
      * to be tested via the set__TARGET_CLASS_NAME__TestInstance() method.
      *
      * This method may also be used to perform any additional setup
