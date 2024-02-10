@@ -5,7 +5,9 @@ namespace __ROOT_NAMESPACE__\tests\classes\__SUB_NAMESPACE__;
 use \__ROOT_NAMESPACE__\classes\__SUB_NAMESPACE__\__TARGET_CLASS_NAME__;
 use \__ROOT_NAMESPACE__\tests\__BASE_TEST_NAME__;
 use \__ROOT_NAMESPACE__\tests\interfaces\__SUB_NAMESPACE__\__TARGET_CLASS_NAME__TestTrait;
+use \PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(__TARGET_CLASS_NAME__::class)]
 class __TARGET_CLASS_NAME__Test extends __BASE_TEST_NAME__
 {
 
