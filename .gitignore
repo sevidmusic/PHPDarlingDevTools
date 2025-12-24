@@ -7,3 +7,7 @@ vendor/
 tmp/
 src
 tests
+.phpactor.json
+.php-cs-fixer.cache
+vimfilelist
+.vimfilelist
