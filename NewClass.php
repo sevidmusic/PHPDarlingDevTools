@@ -52,7 +52,7 @@ echo newLine();
 
 function highlightText(string $text, int $colorCode): string
 {
-    return "\033[38;5;0m\033[48;5;".strval($colorCode).'m'.$text."\033[0m";
+    return "\033[38;5;0m\033[48;5;" . strval($colorCode) . 'm' . $text . "\033[0m";
 }
 
 function createNewClassFiles(string $rootDirectoryPath): void
@@ -97,22 +97,22 @@ function createNewFile(string $path, string $content): void
                 'Skipping ',
                 174
             )
-            .highlightText(
+            . highlightText(
                 $path,
                 202
             )
-            .highlightText(
+            . highlightText(
                 ' because it already exists',
                 174
             )
         );
     } else {
-        $output = highlightText('writing '.$path, 66);
+        $output = highlightText('writing ' . $path, 66);
         if (file_put_contents($path, $content) > 0) {
             $output .= successIndicator();
         } else {
             $output .= errorIndicator();
-            $output .= highlightText('Failed to write: '.$path, 208);
+            $output .= highlightText('Failed to write: ' . $path, 208);
         }
         outputMessage($output);
     }
@@ -131,12 +131,12 @@ function errorIndicator(): string
 function createDirectoryIfItDoesNotExist(string $path): void
 {
     if (!is_dir($path)) {
-        $output = highlightText('Creating new directory at '.$path.' ', 66);
+        $output = highlightText('Creating new directory at ' . $path . ' ', 66);
         if (false !== mkdir($path, permissions: 0o755, recursive: true)) {
             $output .= successIndicator();
         } else {
-            $output .= errorIndicator().PHP_EOL;
-            $output .= highlightText('Failed to create directory: '.$path.' ', 208);
+            $output .= errorIndicator() . PHP_EOL;
+            $output .= highlightText('Failed to create directory: ' . $path . ' ', 208);
         }
         outputMessage($output);
     }
@@ -154,26 +154,26 @@ function rootPathIsValid(string $path): bool
         outputMessage(
             highlightText(
                 WARNING
-                .'The specified --path `',
+                . 'The specified --path `',
                 196
             )
-            .highlightText(
+            . highlightText(
                 $path,
                 202
             )
-            .highlightText(
+            . highlightText(
                 '` cannot be used. ',
                 196
             )
-            .highlightText(
+            . highlightText(
                 tmpDirPath(),
                 202
             )
-            .highlightText(
+            . highlightText(
                 ' will '
-                .'be used as the --path instead',
+                . 'be used as the --path instead',
                 196
-            ).newLine()
+            ) . newLine()
         );
 
         return false;
@@ -184,7 +184,7 @@ function rootPathIsValid(string $path): bool
 
 function tmpDirPath(): string
 {
-    return __DIR__.DIRECTORY_SEPARATOR.'tmp';
+    return __DIR__ . DIRECTORY_SEPARATOR . 'tmp';
 }
 
 function rootDirectoryPath(): string
@@ -212,12 +212,12 @@ function constructAppropriateDirectoryPath(string $testsOrSrc, string $interface
     $newFileSubDirPath = deriveSubDirectoryPathFromSubnamespace();
 
     return $rootDirectoryPath
-        .DIRECTORY_SEPARATOR
-        .$testsOrSrc
-        .DIRECTORY_SEPARATOR
-        .$interfaceOrClass
-        .DIRECTORY_SEPARATOR
-        .$newFileSubDirPath;
+        . DIRECTORY_SEPARATOR
+        . $testsOrSrc
+        . DIRECTORY_SEPARATOR
+        . $interfaceOrClass
+        . DIRECTORY_SEPARATOR
+        . $newFileSubDirPath;
 }
 
 /**
@@ -238,29 +238,29 @@ function determinePathToSaveFileTo(string $templateFileName, string $rootDirecto
                 'interfaces',
                 $rootDirectoryPath
             )
-                .DIRECTORY_SEPARATOR
-                .getArgument('name').'TestTrait.php',
+                . DIRECTORY_SEPARATOR
+                . getArgument('name') . 'TestTrait.php',
             'Test.php' => constructAppropriateDirectoryPath(
                 'tests',
                 'classes',
                 $rootDirectoryPath
             )
-                .DIRECTORY_SEPARATOR
-                .getArgument('name').'Test.php',
+                . DIRECTORY_SEPARATOR
+                . getArgument('name') . 'Test.php',
             'Interface.php' => constructAppropriateDirectoryPath(
                 'src',
                 'interfaces',
                 $rootDirectoryPath
             )
-                .DIRECTORY_SEPARATOR
-                .getArgument('name').'.php',
+                . DIRECTORY_SEPARATOR
+                . getArgument('name') . '.php',
             'Class.php' => constructAppropriateDirectoryPath(
                 'src',
                 'classes',
                 $rootDirectoryPath
             )
-                .DIRECTORY_SEPARATOR
-                .getArgument('name').'.php',
+                . DIRECTORY_SEPARATOR
+                . getArgument('name') . '.php',
             default => outputErrorMessageAndReturnEmptyStringIfFileCouldNotBeCreated(),
         }
     );
@@ -278,37 +278,37 @@ function templatePaths(): array
         'TestTrait.php' => strval(
             realpath(
                 __DIR__
-                .DIRECTORY_SEPARATOR
-                .'templates'
-                .DIRECTORY_SEPARATOR
-                .'TestTrait.php'
+                . DIRECTORY_SEPARATOR
+                . 'templates'
+                . DIRECTORY_SEPARATOR
+                . 'TestTrait.php'
             )
         ),
         'Test.php' => strval(
             realpath(
                 __DIR__
-                .DIRECTORY_SEPARATOR
-                .'templates'
-                .DIRECTORY_SEPARATOR
-                .'Test.php'
+                . DIRECTORY_SEPARATOR
+                . 'templates'
+                . DIRECTORY_SEPARATOR
+                . 'Test.php'
             )
         ),
         'Interface.php' => strval(
             realpath(
                 __DIR__
-                .DIRECTORY_SEPARATOR
-                .'templates'
-                .DIRECTORY_SEPARATOR
-                .'Interface.php'
+                . DIRECTORY_SEPARATOR
+                . 'templates'
+                . DIRECTORY_SEPARATOR
+                . 'Interface.php'
             )
         ),
         'Class.php' => strval(
             realpath(
                 __DIR__
-                .DIRECTORY_SEPARATOR
-                .'templates'
-                .DIRECTORY_SEPARATOR
-                .'Class.php'
+                . DIRECTORY_SEPARATOR
+                . 'templates'
+                . DIRECTORY_SEPARATOR
+                . 'Class.php'
             )
         ),
     ];
@@ -339,16 +339,16 @@ function getArgument(string $name): string
 function exampleArgs(string $highlightArg = ''): string
 {
     return PHP_EOL
-    .('name' === $highlightArg ? highlightText('--name Foo \\', 202) : '--name Foo \\')
-    .PHP_EOL
-    .('path' === $highlightArg ? highlightText('--path ./path/to/project \\', 202) : '--path ./path/to/project \\')
-    .PHP_EOL
-    .('rootnamespace' === $highlightArg ? highlightText('--rootnamespace Foo\\\Bar \\', 202) : '--rootnamespace Foo\\\Bar \\')
-    .PHP_EOL
-    .('subnamespace' === $highlightArg ? highlightText('--subnamespace Baz\\\Bazzer \\', 202) : '--subnamespace Baz\\\Bazzer \\')
-    .PHP_EOL
-    .('basetestname' === $highlightArg ? highlightText('--basetestname ProjectNameTest', 202) : '--basetestname ProjectNameTest')
-    .PHP_EOL;
+    . ('name' === $highlightArg ? highlightText('--name Foo \\', 202) : '--name Foo \\')
+    . PHP_EOL
+    . ('path' === $highlightArg ? highlightText('--path ./path/to/project \\', 202) : '--path ./path/to/project \\')
+    . PHP_EOL
+    . ('rootnamespace' === $highlightArg ? highlightText('--rootnamespace Foo\\\Bar \\', 202) : '--rootnamespace Foo\\\Bar \\')
+    . PHP_EOL
+    . ('subnamespace' === $highlightArg ? highlightText('--subnamespace Baz\\\Bazzer \\', 202) : '--subnamespace Baz\\\Bazzer \\')
+    . PHP_EOL
+    . ('basetestname' === $highlightArg ? highlightText('--basetestname ProjectNameTest', 202) : '--basetestname ProjectNameTest')
+    . PHP_EOL;
 }
 
 function newLine(): string
@@ -359,88 +359,88 @@ function newLine(): string
 function outputErrorMessageAndExitIfExpectedArgumentsWereNotSpecified(): void
 {
     $args = getArguments();
-    $example = newLine().'For example:'.newLine().'php NewClass.php \\';
+    $example = newLine() . 'For example:' . newLine() . 'php NewClass.php \\';
     if (!isset($args['name'])) {
         outputMessageAndExit(
             PHP_EOL
-            .'You must specify a '.highlightText('--name', 202).' for the new Class.'
-            .$example.exampleArgs('name')
+            . 'You must specify a ' . highlightText('--name', 202) . ' for the new Class.'
+            . $example . exampleArgs('name')
         );
     }
 
     if (!isset($args['path'])) {
         outputMessageAndExit(
             PHP_EOL
-            .'You must specify a '.highlightText('--path', 202).' that is the full path to '
-            .'the project the new class will be created for.'
-            .$example.exampleArgs('path')
+            . 'You must specify a ' . highlightText('--path', 202) . ' that is the full path to '
+            . 'the project the new class will be created for.'
+            . $example . exampleArgs('path')
         );
     }
 
     if (!isset($args['rootnamespace'])) {
         outputMessageAndExit(
             PHP_EOL
-            .'You must specify a '
-            .highlightText('--rootnamespace', 202)
-            .'. This will be '
-            .'the part of the namespace that should precede the '
-            .'--subnamespace.'
-            .newLine()
-            .'For example: '
-            .'If the --subnamespace is `Sub\Namespace` and the '
-            .' --rootnamespace is `Root\Namespace`'
-            .'then the complete namespace would '
-            .'would be Root\Namespace\classes\Sub\Namespace`'
-            .PHP_EOL
-            .'Another example:'
-            .PHP_EOL
-            .str_replace('For example:', '', $example.exampleArgs('rootnamespace'))
+            . 'You must specify a '
+            . highlightText('--rootnamespace', 202)
+            . '. This will be '
+            . 'the part of the namespace that should precede the '
+            . '--subnamespace.'
+            . newLine()
+            . 'For example: '
+            . 'If the --subnamespace is `Sub\Namespace` and the '
+            . ' --rootnamespace is `Root\Namespace`'
+            . 'then the complete namespace would '
+            . 'would be Root\Namespace\classes\Sub\Namespace`'
+            . PHP_EOL
+            . 'Another example:'
+            . PHP_EOL
+            . str_replace('For example:', '', $example . exampleArgs('rootnamespace'))
         );
     }
 
     if (!isset($args['subnamespace'])) {
         outputMessageAndExit(
             PHP_EOL
-            .'You must specify a '
-            .highlightText('--subnamespace', 202)
-            .'. This will be '
-            .'the part of the namespace that should follow the '
-            .'projects root namespace.'
-            .newLine()
-            .'For example: '
-            .'If the projects root namespace is '
-            .'`Root\Namespace` and the subnamespace '
-            .'is `Sub\Namespace` then the complete namespace would '
-            .'would be Root\Namespace\classes\Sub\Namespace`'
-            .PHP_EOL
-            .'Another example:'
-            .PHP_EOL
-            .str_replace('For example:', '', $example.exampleArgs('subnamespace'))
+            . 'You must specify a '
+            . highlightText('--subnamespace', 202)
+            . '. This will be '
+            . 'the part of the namespace that should follow the '
+            . 'projects root namespace.'
+            . newLine()
+            . 'For example: '
+            . 'If the projects root namespace is '
+            . '`Root\Namespace` and the subnamespace '
+            . 'is `Sub\Namespace` then the complete namespace would '
+            . 'would be Root\Namespace\classes\Sub\Namespace`'
+            . PHP_EOL
+            . 'Another example:'
+            . PHP_EOL
+            . str_replace('For example:', '', $example . exampleArgs('subnamespace'))
         );
     }
 
     if (!isset($args['basetestname'])) {
         outputMessageAndExit(
             PHP_EOL
-            .'You must specify a '
-            .highlightText('--basetestname', 202)
-            .' that matches the '
-            .'name of the projects base test class. This class '
-            .'should exist at `tests/BASETESTNAMETest.php'
-            .newLine()
-            .'Note: This script is intended for use creating Darling '
-            .'libraries, if your project is not a darling library '
-            .'then this parameter will probably not make sense to '
-            .'to you, and you are probably using this script for '
-            .'for the wrong purpose.'
-            .$example.exampleArgs('basetestname')
+            . 'You must specify a '
+            . highlightText('--basetestname', 202)
+            . ' that matches the '
+            . 'name of the projects base test class. This class '
+            . 'should exist at `tests/BASETESTNAMETest.php'
+            . newLine()
+            . 'Note: This script is intended for use creating Darling '
+            . 'libraries, if your project is not a darling library '
+            . 'then this parameter will probably not make sense to '
+            . 'to you, and you are probably using this script for '
+            . 'for the wrong purpose.'
+            . $example . exampleArgs('basetestname')
         );
     }
 }
 
 function outputMessage(string $message): void
 {
-    echo PHP_EOL.$message.PHP_EOL;
+    echo PHP_EOL . $message . PHP_EOL;
 }
 
 function outputMessageAndExit(string $message, int $exitCode = 1): void
