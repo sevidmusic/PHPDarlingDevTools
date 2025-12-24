@@ -20,7 +20,6 @@
         }
     },
     "require-dev": {
-        "phpstan/phpstan": "*",
-        "friendsofphp/php-cs-fixer": "^3.92"
+        "phpstan/phpstan": "*"
     }
 }
