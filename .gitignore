@@ -7,3 +7,4 @@ vendor/
 tmp/
 src
 tests
+.phpactor.json
