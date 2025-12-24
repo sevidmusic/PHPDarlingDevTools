@@ -28,6 +28,7 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
+        php_version: 8.5
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
